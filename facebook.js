@@ -10,31 +10,32 @@ const base_url = options.base_url;
 
 (async () => {
   //
-  const verifyDetails = {
+  const verifyData =
+  {
     user_id: 13,
     sub_id: 1,
-    post_id: 10157176632651485,
+    post_id: '10157647876236749',
     action_name: 'facebook_like',
-    username: 'Pearly Lam'
+    username: 100008732322404
   };
 
-
-  async function getVerifyData() {
-    return new Promise((resolve, reject) => {
-      const payload = { device_name: 'puppet_1' };
-      axios.post(base_url + '/lua/weibo_calling', payload)
-        .then((response) => {
-          verifyDetails = response.data;
-          console.log(verifyDetails);
-          resolve();
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-          reject();
-        })
-    })
-  }
+  // call api
+  // async function getVerifyData() {
+  //   return new Promise((resolve, reject) => {
+  //     const payload = { device_name: 'puppet_1' };
+  //     axios.post(base_url + '/lua/weibo_calling', payload)
+  //       .then((response) => {
+  //         verifyDetails = response.data;
+  //         console.log(verifyDetails);
+  //         resolve();
+  //       })
+  //       .catch((error) => {
+  //         // handle error
+  //         console.log(error);
+  //         reject();
+  //       })
+  //   })
+  // }
 
   const browser = await puppeteer.launch({
     ...options.launch_options
@@ -77,18 +78,17 @@ const base_url = options.base_url;
   //   }
   // }
   // while (!loop);
-
-  if (verifyDetails.action_name === 'facebook_comment') {
-    try { 
+  if (verifyData.action_name === 'facebook_comment') {
+    try {
       console.log('starting verify comment');
-      await verifyComment(browser, verifyDetails);
+      await verifyComment(browser, verifyData);
       completed = true;
     } catch (e) {
       if (e && e.rejectCode === 1) {
         console.log('---------------------');
         console.log(e.message);
         console.log('---------------------');
-        // await rejectVerify(verifyDetails);
+        // await rejectVerify(verifyData);
         completed = true;
       } else {
         console.log('ERROR', e);
@@ -96,17 +96,17 @@ const base_url = options.base_url;
         completed = false;
       }
     }
-  } else if (verifyDetails.action_name === 'facebook_like') {
+  } else if (verifyData.action_name === 'facebook_like') {
     try {
       console.log('starting verify like');
-      await verifyLike(browser, verifyDetails);
+      await verifyLike(browser, verifyData);
       completed = true;
     } catch (e) {
       if (e && e.rejectCode === 1) {
         console.log('---------------------');
         console.log(e.message);
         console.log('---------------------');
-        // await rejectVerify(verifyDetails);
+        // await rejectVerify(verifyData);
         completed = true;
       } else {
         console.log('ERROR', e);

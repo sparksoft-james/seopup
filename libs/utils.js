@@ -7,6 +7,10 @@ function delay(time) {
   });
 }
 
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
 async function initPage(browser, acceptCss, acceptImg) {
   const page = await browser.newPage();
   page.setDefaultTimeout(60000);
@@ -52,10 +56,10 @@ async function rejectVerify(payload) {
 
 function randGenNumber() {
   return Math.floor(Math.random() * 300) + 100;
-
 }
 
 async function waitToInput(page, selector, inputVal) {
+  console.log(selector,inputVal);
   await setTimeout(function () { page.$eval(selector, (el, value) => { el.value = value }, inputVal) }, randGenNumber());
 }
 
@@ -67,8 +71,24 @@ async function waitToGo(page, url) {
   await setTimeout(function () { page.goto(url); }, randGenNumber());
 }
 
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, '\\$&');
+  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+      results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
 module.exports = {
   initPage,
   rejectVerify,
-  delay
+  delay,
+  randGenNumber,
+  waitToInput,
+  waitToClick,
+  waitToGo,
+  getParameterByName,
+  getRandomArbitrary
 }

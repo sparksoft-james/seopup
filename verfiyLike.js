@@ -1,45 +1,68 @@
-const { initPage, waitToGo } = require('./libs/utils');
+const { initPage, waitToGo, getParameterByName, delay, getRandomArbitrary } = require('./libs/utils');
 
 async function verifyLike(browser, verifyDetails) {
   const page = await initPage(browser, true);
+
   try {
     // go to the page 
-    const url = `https://mbasic.facebook.com/${verifyDetails.post_id}`;
-    waitToGo(page, url)
+    let url = `https://facebook.com/${verifyDetails.post_id}`;
+    await page.goto(url);
 
-    // click on the like button
-    await page.$eval('.di', btn => btn.click());
+    await page.waitForSelector("._3dlf");
+    await page.$eval('._3dlf', btn => btn.click());
 
-    const hrefs1 = await page.evaluate(
-      () => Array.from(
-        document.querySelectorAll('.bt a[href]'),
-        a => a.getAttribute('href')
-      )
-    );
+    // await delay(10000);
+    // console.log('delayed');
 
-    console.log('the link:', hrefs1)
+    await page.waitForSelector("._3qw");
+    console.log('element render');
 
-    // console.log(page.url());
+    await page.waitForSelector("#reaction_profile_pager a[href].uiMorePagerPrimary");
+    console.log('see more button render');
 
-    const limit = 1000;
-    const total_count = 1000;
+    // page.$eval(selector, pageFunction[, ...args])
+    // pageFunction <function(Element)> Function to be evaluated in browser context
 
-    const url = ` https://mbasic.facebook.com/ufi/reaction/profile/browser/fetch/?limit=10000&total_count=15000&ft_ent_identifier=`;
-    await page.goto(`https://www.facebook.com/${verifyDetails.post_id}`);
+   
+
+    for (i = 0; i < 1000; i++) {
+      const randDelayTime = getRandomArbitrary(4000, 6000);
+      console.log("randDelayTime:", randDelayTime)
+      await delay(randDelayTime);
+      try {
+        await page.$eval('#reaction_profile_pager a[href].uiMorePagerPrimary', btn => btn.click());
+        console.log('button click times...' + i);
+      } catch {
+        console.log('no more see more');
+        break;
+      }
+    }
 
 
-    console.log('successful onboard verify comment page')
-    await page.waitForSelector("._81hb");
-    console.log('successful found post like button');
+    console.log('loop exit');
 
-    page.$eval('._81hb', btn => btn.click());
+    // const selectorForLoadMoreButton = '#reaction_profile_pager a[href].uiMorePagerPrimary';
 
-    await page.waitForSelector("._5j0e");
+    // const isElementVisible = async (page, cssSelector) => {
+    //   let visible = true;
+    //   await page
+    //     .waitForSelector(cssSelector, { visible: true, timeout: 2000 })
+    //     .catch(() => {
+    //       visible = false;
+    //     });
+    //   return visible;
+    // };
 
-    const likes = await page.$$eval('._5j0e > a', likes => likes.map(element => element.innerHTML.trim()));
+    // let loadMoreVisible = await isElementVisible(page, selectorForLoadMoreButton);
 
-    console.log(likes);
+    // while (loadMoreVisible) {
+    //   await setTimeout(function () {
+    //     console.log('loadMoreVisible:', loadMoreVisible);
+    //     page.$eval('.uiMorePagerPrimary', btn => btn.click())
+    //   }, 3000);
 
+    //   loadMoreVisible = await isElementVisible(page, selectorForLoadMoreButton);
+    // };
   } catch (e) {
     throw (e);
   }
