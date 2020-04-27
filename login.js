@@ -18,9 +18,9 @@ async function login(page, credential) {
     page.waitForNavigation({ waitUntil: 'networkidle0' }),
   ]);
 
+  
 
-  console.log('login button clicked');
-
+  console.log('login success');
 }
 
 module.exports = login;

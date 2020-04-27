@@ -1,6 +1,11 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
+
+// add stealth plugin and use defaults (all evasion techniques)
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
+
 const options = require('./config.js') || {};
-const { delay, initPage, rejectVerify } = require('./libs/utils');
+const { delay, initPage, rejectVerify, changeVPN } = require('./libs/utils');
 const axios = require('axios');
 const login = require('./login');
 const verifyComment = require('./verifyComment');
@@ -115,5 +120,4 @@ const base_url = options.base_url;
       }
     }
   }
-
 })();

@@ -23,10 +23,8 @@ async function verifyLike(browser, verifyDetails) {
     // page.$eval(selector, pageFunction[, ...args])
     // pageFunction <function(Element)> Function to be evaluated in browser context
 
-   
-
     for (i = 0; i < 1000; i++) {
-      const randDelayTime = getRandomArbitrary(4000, 6000);
+      const randDelayTime = getRandomArbitrary(10000, 12000);
       console.log("randDelayTime:", randDelayTime)
       await delay(randDelayTime);
       try {
@@ -37,7 +35,6 @@ async function verifyLike(browser, verifyDetails) {
         break;
       }
     }
-
 
     console.log('loop exit');
 
