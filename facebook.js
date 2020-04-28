@@ -19,7 +19,7 @@ const base_url = options.base_url;
   {
     user_id: 13,
     sub_id: 1,
-    post_id: '10157647876236749',
+    post_id: '10157236421491485',
     action_name: 'facebook_like',
     username: 100008732322404
   };

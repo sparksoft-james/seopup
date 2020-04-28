@@ -23,18 +23,46 @@ async function verifyLike(browser, verifyDetails) {
     // page.$eval(selector, pageFunction[, ...args])
     // pageFunction <function(Element)> Function to be evaluated in browser context
 
-    for (i = 0; i < 1000; i++) {
+    // for (i = 0; i < 1000; i++) {
+    //   const randDelayTime = getRandomArbitrary(10000, 12000);
+    //   console.log("randDelayTime:", randDelayTime)
+    //   await delay(randDelayTime);
+    //   try {
+    //     await page.$eval('#reaction_profile_pager a[href].uiMorePagerPrimary', btn => btn.click());
+    //     console.log('button click times...' + i);
+    //   } catch {
+    //     console.log('no more see more');
+    //     break;
+    //   }
+    // }
+
+    const seeMoreButtonSelector = '#reaction_profile_pager a[href].uiMorePagerPrimary';
+
+    let i = 1;
+    let likeList = [];
+
+    do {
+      await page.waitForSelector(seeMoreButtonSelector);
+      console.log('see more button render');
+
+      console.log('crawl time:', i);
+
+      const elements = await page.evaluateHandle(() => {
+        return Array.from(document.getElementsByTagName('a')).map(a => a.href.match(/^https:\/\/(.*\?fref=pb)/gm)).filter(val => !!val).map(user => user[0]);
+      });
+      const listOfUser = await elements.jsonValue();
+
+      const removeDuplicate = listOfUser.filter((val, index, self) => index == self.indexOf(val));
+      console.log('element', removeDuplicate[removeDuplicate.length - 1]);
+
       const randDelayTime = getRandomArbitrary(10000, 12000);
-      console.log("randDelayTime:", randDelayTime)
-      await delay(randDelayTime);
-      try {
-        await page.$eval('#reaction_profile_pager a[href].uiMorePagerPrimary', btn => btn.click());
-        console.log('button click times...' + i);
-      } catch {
-        console.log('no more see more');
-        break;
-      }
-    }
+      await delay(Math.floor(randDelayTime));
+
+      await page.$eval(seeMoreButtonSelector, (btn) => btn.click());
+      i++;
+    } while (await page.$(seeMoreButtonSelector) !== null);
+
+    console.log(listOfUser);
 
     console.log('loop exit');
 
