@@ -14,16 +14,57 @@ const verifyLike = require('./verfiyLike');
 const base_url = options.base_url;
 
 (async () => {
-  //
-  const verifyData =
-  {
-    user_id: 13,
-    sub_id: 1,
-    post_id: '10157236421491485',
-    action_name: 'facebook_like',
-    username: 100008732322404
-  };
-
+  // data list
+  const verifyData = [
+    // jj lin post --> play on fest
+    {
+      user_id: 13,
+      sub_id: 1,
+      post_id: '10157236421491485',
+      action_name: 'facebook_like',
+      username: '100023556156309'
+    },
+    // jchou post --> zhou you ji
+    {
+      user_id: 13,
+      sub_id: 1,
+      post_id: '10159449649268976',
+      action_name: 'facebook_like',
+      username: '100028429980340'
+    },
+    // obama post --> hills
+    {
+      user_id: 13,
+      sub_id: 1,
+      post_id: '10157671215226749',
+      action_name: 'facebook_like',
+      username: 'kimario.temba'
+    },
+    // gem post --> new pet
+    {
+      user_id: 13,
+      sub_id: 1,
+      post_id: '10159820668856038',
+      action_name: 'facebook_like',
+      username: 'suiyi.shum'
+    },
+    // happy2u --> dalgona shoes
+    {
+      user_id: 13,
+      sub_id: 1,
+      post_id: '2939039776142289',
+      action_name: 'facebook_like',
+      username: 'NFA7397'
+    },
+    // exo --> lucky seven
+    {
+      user_id: 13,
+      sub_id: 1,
+      post_id: '3408192165875520',
+      action_name: 'facebook_like',
+      username: '100049251972716'
+    },
+  ];
   // call api
   // async function getVerifyData() {
   //   return new Promise((resolve, reject) => {
@@ -49,7 +90,7 @@ const base_url = options.base_url;
   console.log('initializing...');
   let page = await initPage(browser, false, true);
   let pass = false;
-  await login(page, options.credential);
+  await login(page);
   pass = true;
 
   // relogin function;
@@ -83,41 +124,51 @@ const base_url = options.base_url;
   //   }
   // }
   // while (!loop);
-  if (verifyData.action_name === 'facebook_comment') {
-    try {
-      console.log('starting verify comment');
-      await verifyComment(browser, verifyData);
-      completed = true;
-    } catch (e) {
-      if (e && e.rejectCode === 1) {
-        console.log('---------------------');
-        console.log(e.message);
-        console.log('---------------------');
-        // await rejectVerify(verifyData);
+  let i = 0;
+  do {
+    console.log('start new verification process...');
+
+    console.log(verifyData[i]);
+    if (verifyData[i].action_name === 'facebook_comment') {
+      try {
+        console.log('starting verify comment');
+        await verifyComment(browser, verifyData[i]);
+        i++;
+
         completed = true;
-      } else {
-        console.log('ERROR', e);
-        console.error('retrying verifyComment...');
-        completed = false;
+      } catch (e) {
+        if (e && e.rejectCode === 1) {
+          console.log('---------------------');
+          console.log(e.message);
+          console.log('---------------------');
+          // await rejectVerify(verifyData);
+          completed = true;
+        } else {
+          console.log('ERROR', e);
+          console.error('retrying verifyComment...');
+          completed = false;
+        }
+      }
+    } else if (verifyData[i].action_name === 'facebook_like') {
+      try {
+        console.log('starting verify like');
+        await verifyLike(browser, verifyData[i]);
+        console.log('end verify like');
+        completed = true;
+
+      } catch (e) {
+        if (e && e.rejectCode === 1) {
+          console.log('---------------------');
+          console.log(e.message);
+          console.log('---------------------');
+          // await rejectVerify(verifyData);
+          completed = true;
+        } else {
+          console.log('ERROR', e);
+          console.error('retrying verifyLike...');
+          completed = false;
+        }
       }
     }
-  } else if (verifyData.action_name === 'facebook_like') {
-    try {
-      console.log('starting verify like');
-      await verifyLike(browser, verifyData);
-      completed = true;
-    } catch (e) {
-      if (e && e.rejectCode === 1) {
-        console.log('---------------------');
-        console.log(e.message);
-        console.log('---------------------');
-        // await rejectVerify(verifyData);
-        completed = true;
-      } else {
-        console.log('ERROR', e);
-        console.error('retrying verifyLike...');
-        completed = false;
-      }
-    }
-  }
+  } while (i === verifyData.length - 1);
 })();
