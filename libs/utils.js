@@ -8,7 +8,7 @@ function delay(time) {
 }
 
 function getRandomArbitrary(min, max) {
-  return Math.random() * (max - min) + min;
+  return Math.floor(Math.random() * (max - min) + min);
 }
 
 async function initPage(browser, acceptCss, acceptImg) {
@@ -59,7 +59,7 @@ function randGenNumber() {
 }
 
 async function waitToInput(page, selector, inputVal) {
-  console.log(selector,inputVal);
+  console.log(selector, inputVal);
   await setTimeout(function () { page.$eval(selector, (el, value) => { el.value = value }, inputVal) }, randGenNumber());
 }
 
@@ -75,10 +75,14 @@ function getParameterByName(name, url) {
   if (!url) url = window.location.href;
   name = name.replace(/[\[\]]/g, '\\$&');
   var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-      results = regex.exec(url);
+    results = regex.exec(url);
   if (!results) return null;
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+function getStringFromLastSlash(string) {
+  return /[^/]*$/.exec(string)[0].replace('?fref=pb','');
 }
 
 module.exports = {
@@ -90,5 +94,6 @@ module.exports = {
   waitToClick,
   waitToGo,
   getParameterByName,
-  getRandomArbitrary
+  getRandomArbitrary,
+  getStringFromLastSlash
 }

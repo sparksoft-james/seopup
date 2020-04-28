@@ -1,4 +1,4 @@
-const { initPage, waitToGo, getParameterByName, delay, getRandomArbitrary } = require('./libs/utils');
+const { initPage, waitToGo, getParameterByName, delay, getRandomArbitrary, getStringFromLastSlash } = require('./libs/utils');
 
 async function verifyLike(browser, verifyDetails) {
   const page = await initPage(browser, true);
@@ -16,10 +16,6 @@ async function verifyLike(browser, verifyDetails) {
 
     await page.waitForSelector("._3qw");
     console.log('element render');
-
-    await page.waitForSelector("#reaction_profile_pager a[href].uiMorePagerPrimary");
-    console.log('see more button render');
-
     // page.$eval(selector, pageFunction[, ...args])
     // pageFunction <function(Element)> Function to be evaluated in browser context
 
@@ -39,8 +35,6 @@ async function verifyLike(browser, verifyDetails) {
     const seeMoreButtonSelector = '#reaction_profile_pager a[href].uiMorePagerPrimary';
 
     let i = 1;
-    let likeList = [];
-
     do {
       await page.waitForSelector(seeMoreButtonSelector);
       console.log('see more button render');
@@ -48,23 +42,33 @@ async function verifyLike(browser, verifyDetails) {
       console.log('crawl time:', i);
 
       const elements = await page.evaluateHandle(() => {
-        return Array.from(document.getElementsByTagName('a')).map(a => a.href.match(/^https:\/\/(.*\?fref=pb)/gm)).filter(val => !!val).map(user => user[0]);
+        return Array.from(document.getElementsByTagName('a')).map(a => a.href.match(/^https:\/\/(.*fref=pb)/gm)).filter(val => !!val).map(user => user[0]);
       });
+
       const listOfUser = await elements.jsonValue();
 
       const removeDuplicate = listOfUser.filter((val, index, self) => index == self.indexOf(val));
-      console.log('element', removeDuplicate[removeDuplicate.length - 1]);
 
-      const randDelayTime = getRandomArbitrary(10000, 12000);
-      await delay(Math.floor(randDelayTime));
 
-      await page.$eval(seeMoreButtonSelector, (btn) => btn.click());
-      i++;
+      const userList = removeDuplicate.map((val) => {
+        return getParameterByName('id', val) || getStringFromLastSlash(val);
+      });
+
+      // console.log(userList.slice(userList.length - 50));
+      console.log(userList);
+
+      if (userList.includes(verifyDetails.username)) {
+        console.log('user found')
+        break;
+      } else {
+        const randDelayTime = getRandomArbitrary(10000, 12000);
+        await delay(randDelayTime);
+
+        await page.$eval(seeMoreButtonSelector, (btn) => btn.click());
+        i++;
+      }
+
     } while (await page.$(seeMoreButtonSelector) !== null);
-
-    console.log(listOfUser);
-
-    console.log('loop exit');
 
     // const selectorForLoadMoreButton = '#reaction_profile_pager a[href].uiMorePagerPrimary';
 
