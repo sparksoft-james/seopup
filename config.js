@@ -5,7 +5,7 @@ module.exports = {
   launch_options: {
     headless: false,
     args: ['--disable-web-security'],
-    executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome'
+    // executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome'
   },
   viewport_options: {
     width: 1920,
