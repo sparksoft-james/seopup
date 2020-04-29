@@ -5,64 +5,101 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
 const options = require('./config.js') || {};
-const { delay, initPage, rejectVerify, changeVPN } = require('./libs/utils');
+const { initPage, delay } = require('./libs/utils');
 const axios = require('axios');
 const login = require('./login');
-const verifyComment = require('./verifyComment');
-const verifyLike = require('./verfiyLike');
+const verifyActivity = require('./verifyActivity');
+const verifyActivityMobile = require('./verifyActivityMobile');
 
 const base_url = options.base_url;
 
 (async () => {
   // data list
   const verifyData = [
-    // jj lin post --> play on fest
+    // warro like vin diesel
     {
       user_id: 13,
       sub_id: 1,
-      post_id: '10157236421491485',
-      action_name: 'facebook_like',
-      username: '100023556156309'
+      action_name: 'like',
+      facebook_id: '100050630166518',
+      post_id: '10158513238923313',
+      action_link: 'https://www.facebook.com/warro.mario.9/posts/107890880908584:6'
     },
-    // jchou post --> zhou you ji
+    // // waffle jam like (happy post)
     {
       user_id: 13,
       sub_id: 1,
-      post_id: '10159449649268976',
-      action_name: 'facebook_like',
-      username: '100028429980340'
-    },
-    // obama post --> hills
-    {
-      user_id: 13,
-      sub_id: 1,
-      post_id: '10157671215226749',
-      action_name: 'facebook_like',
-      username: 'kimario.temba'
-    },
-    // gem post --> new pet
-    {
-      user_id: 13,
-      sub_id: 1,
-      post_id: '10159820668856038',
-      action_name: 'facebook_like',
-      username: 'suiyi.shum'
-    },
-    // happy2u --> dalgona shoes
-    {
-      user_id: 13,
-      sub_id: 1,
+      action_name: 'like',
+      facebook_id: '100049949943171',
       post_id: '2939039776142289',
-      action_name: 'facebook_like',
-      username: 'NFA7397'
+      action_link: 'https://www.facebook.com/waffle.jam.773/posts/118795473128784:3'
     },
-    // exo --> lucky seven
+    //  waffle jam comment (happy post)
     {
       user_id: 13,
       sub_id: 1,
-      post_id: '3408192165875520',
-      action_name: 'facebook_like',
-      username: '100049251972716'
+      action_name: 'comment',
+      facebook_id: '100049949943171',
+      action_link: 'https://www.facebook.com/waffle.jam.773/posts/2955944024451864:0'
+    },
+    // // waffle penault like gem post
+    {
+      user_id: 13,
+      sub_id: 1,
+      action_name: 'like',
+      facebook_id: '100050514467209',
+      action_link: 'https://www.facebook.com/waffle.penaut.1/posts/112528420440973:2'
+    },
+    // waffle penault comment gem post
+    {
+      user_id: 13,
+      sub_id: 1,
+      action_name: 'comment',
+      facebook_id: '100050514467209',
+      action_link: 'https://www.facebook.com/waffle.jam.773/posts/2955944024451864:0'
+    },
+    // waffle penault share gem post
+    {
+      user_id: 13,
+      sub_id: 1,
+      action_name: 'share',
+      facebook_id: '100050514467209',
+      action_link: 'https://www.facebook.com/waffle.penaut.1/posts/112634920430323'
+    },
+    // keneedy like vin diesel post
+    {
+      user_id: 13,
+      sub_id: 1,
+      action_name: 'like',
+      facebook_id: '1133377454',
+      action_link: 'https://m.facebook.com/story.php?story_fbid=10220981838792362&substory_index=0&id=1133377454&ref=bookmarks'
+    },
+    // waffle jam like vin diesel post
+    {
+      user_id: 13,
+      sub_id: 1,
+      action_name: 'like',
+      facebook_id: '100049949942171',
+      post_id: '10158513238923313',
+      action_link: 'https://m.facebook.com/story.php?story_fbid=118795473128784&substory_index=0&id=100049949943171&ref=bookmarks'
+    },
+    //  waffle jam comment vin diesel post
+    {
+      user_id: 13,
+      sub_id: 1,
+      action_name: 'comment',
+      facebook_id: '100049949943171',
+      post_id: '10158513238923313',
+      action_link: 'https://m.facebook.com/story.php?story_fbid=2955944024451864&substory_index=1&id=100049949943171&ref=bookmarks'
+    },
+    //  waffle jam share vin diesel post
+    {
+      user_id: 13,
+      sub_id: 1,
+      action_name: 'share',
+      facebook_id: '100049949943171',
+      post_id: '10158513238923313',
+      action_link: 'https://m.facebook.com/story.php?story_fbid=119109453097386&id=100049949943171&ref=bookmarks'
     },
   ];
   // call api
@@ -126,49 +163,34 @@ const base_url = options.base_url;
   // while (!loop);
   let i = 0;
   do {
+    await delay(4000);
+    console.log('this is ', i + 1, 'times');
     console.log('start new verification process...');
-
     console.log(verifyData[i]);
-    if (verifyData[i].action_name === 'facebook_comment') {
-      try {
-        console.log('starting verify comment');
-        await verifyComment(browser, verifyData[i]);
-        i++;
-
-        completed = true;
-      } catch (e) {
-        if (e && e.rejectCode === 1) {
-          console.log('---------------------');
-          console.log(e.message);
-          console.log('---------------------');
-          // await rejectVerify(verifyData);
-          completed = true;
-        } else {
-          console.log('ERROR', e);
-          console.error('retrying verifyComment...');
-          completed = false;
-        }
+    try {
+      console.log('starting verify activity process');
+      if (!verifyData[i].action_link.includes('m.facebook.com')) {
+        console.log('the link is desktop version, change to m.facebook');
+        verifyData[i].action_link = verifyData[i].action_link.replace('www.facebook.com', 'm.facebook.com');
+        console.log('action_link:', verifyData[i].action_link);
       }
-    } else if (verifyData[i].action_name === 'facebook_like') {
-      try {
-        console.log('starting verify like');
-        await verifyLike(browser, verifyData[i]);
-        console.log('end verify like');
-        completed = true;
 
-      } catch (e) {
-        if (e && e.rejectCode === 1) {
-          console.log('---------------------');
-          console.log(e.message);
-          console.log('---------------------');
-          // await rejectVerify(verifyData);
-          completed = true;
-        } else {
-          console.log('ERROR', e);
-          console.error('retrying verifyLike...');
-          completed = false;
-        }
+      await verifyActivityMobile(browser, verifyData[i]);
+      console.log('complete verify activity process');
+
+    } catch (e) {
+      if (e && e.rejectCode === 1) {
+        console.log('---------------------');
+        console.log(e.message);
+        console.log('---------------------');
+        // await rejectVerify(verifyData);
+        completed = true;
+      } else {
+        console.log('ERROR', e);
+        console.error(' id not found...');
+        completed = false;
       }
     }
-  } while (i === verifyData.length - 1);
+    i++;
+  } while (i < verifyData.length);
 })();
