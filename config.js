@@ -5,7 +5,6 @@ module.exports = {
   launch_options: {
     headless: true,
     args: ['--disable-web-security', '--no-sandbox'],
-    executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome'
   },
   viewport_options: {
     width: 1920,
