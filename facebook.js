@@ -14,7 +14,7 @@ const verifyActivityMobile = require('./verifyActivityMobile');
 const base_url = options.base_url;
 
 (async () => {
-  // call api
+  // call api for get data
   let verifyDetails = {}
   async function getVerifyData() {
     return new Promise((resolve, reject) => {
@@ -26,6 +26,24 @@ const base_url = options.base_url;
           resolve();
         })
         .catch((error) => {
+          // handle error
+          console.log(error);
+          reject();
+        })
+    })
+  }
+  // fire api for fail
+  async function completeVerify(status, payload) {
+    return new Promise(function (resolve, reject) {
+      const apiKey = status === 'success' ? 'deviceComplete' : 'reject'
+      const obj = { user_id: payload.user_id, sub_id: payload.sub_id };
+      console.log(obj)
+      axios.post(base_url + `/main-mission/${apiKey}`, obj)
+        .then(function (response) {
+          console.log(response.data);
+          resolve();
+        })
+        .catch(function (error) {
           // handle error
           console.log(error);
           reject();
@@ -73,7 +91,8 @@ const base_url = options.base_url;
         completed = true;
       } catch (e) {
         console.log('ERROR', e);
-        console.error(' id not found...');
+        console.error(' action link not found...');
+        await completeVerify('fail', verifyDetails);
         completed = true;
       }
     }
