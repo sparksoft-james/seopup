@@ -62,7 +62,7 @@ const base_url = options.base_url;
   pass = true;
 
   // calling the api from backend
-  const loop = false;
+  let loop = 0;
   let completed = true;
 
   do {
@@ -96,6 +96,7 @@ const base_url = options.base_url;
         completed = true;
       }
     }
+    loop++
   }
-  while (!loop);
+  while (loop < 10);
 })();
