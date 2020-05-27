@@ -15,22 +15,30 @@ const base_url = options.base_url;
 
 (async () => {
   // call api for get data
-  let verifyDetails = {}
-  async function getVerifyData() {
-    return new Promise((resolve, reject) => {
-      const payload = { device_name: 'facebook_1' };
-      axios.post(base_url + '/lua/facebook_calling', payload)
-        .then((response) => {
-          verifyDetails = response.data;
-          console.log(verifyDetails);
-          resolve();
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-          reject();
-        })
-    })
+  // let verifyDetails = {}
+  // async function getVerifyData() {
+  //   return new Promise((resolve, reject) => {
+  //     const payload = { device_name: 'facebook_1' };
+  //     axios.post(base_url + '/lua/facebook_calling', payload)
+  //       .then((response) => {
+  //         verifyDetails = response.data;
+  //         console.log(verifyDetails);
+  //         resolve();
+  //       })
+  //       .catch((error) => {
+  //         // handle error
+  //         console.log(error);
+  //         reject();
+  //       })
+  //   })
+  // }
+  let verifyDetails = {
+    user_id: 501,
+    sub_id: 39,
+    action_link: 'https://www.facebook.com/profile.php?id=100023973350933&lst=100023973350933%3A100023973350933%3A1590548381&sk=about',
+    facebook_id: '100023973350933',
+    action_name: 'page_like',
+    criteria: 'Ki%E1%BA%BFm-Ti%E1%BB%81n-3s-106156554366493'
   }
   // fire api for fail
   async function completeVerify(status, payload) {
