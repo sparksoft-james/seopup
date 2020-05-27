@@ -3,7 +3,7 @@ const { initPage } = require('./libs/utils');
 async function verifyComment(browser, verifyDetails) {
   const page = await initPage(browser, true);
   try {
-    await page.goto(`https://www.facebook.com/${verifyDetails.post_id}`);
+    await page.goto(`https://www.facebook.com/${verifyDetails.post_id}`, {waitUntil: 'load', timeout: 0});
     console.log('successful onboard verify comment page')
     await page.waitForSelector("._7791");
     console.log('successful found comment');

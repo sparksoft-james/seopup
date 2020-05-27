@@ -3,7 +3,7 @@ const { initPage } = require('./libs/utils');
 async function verifyActivity(browser, verifyDetails, version) {
   const page = await initPage(browser, true);
   try {
-    await page.goto(verifyDetails.action_link);
+    await page.goto(verifyDetails.action_link, {waitUntil: 'load', timeout: 0});
 
     console.log('successful onboard verify activity page');
 

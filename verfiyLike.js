@@ -6,7 +6,7 @@ async function verifyLike(browser, verifyDetails) {
   try {
     // go to the page 
     let url = `https://facebook.com/${verifyDetails.post_id}`;
-    await page.goto(url);
+    await page.goto(url, {waitUntil: 'load', timeout: 0});
 
     await page.waitForSelector("._3dlf");
     await page.$eval('._3dlf', btn => btn.click());

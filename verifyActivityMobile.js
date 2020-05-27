@@ -26,7 +26,7 @@ async function verifyActivityMobile(browser, verifyDetails) {
   try {
 
     console.log(verifyDetails.action_link);
-    await page.goto(verifyDetails.action_link);
+    await page.goto(verifyDetails.action_link, {waitUntil: 'load', timeout: 0});
 
     console.log('successful onboard verify activity page');
 

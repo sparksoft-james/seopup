@@ -12,7 +12,7 @@ async function login(page) {
   const credential = options.credential[ranNum];
 
   console.log('browsing to https://www.facebook.com/...');
-  await page.goto('https://facebook.com/');
+  await page.goto('https://facebook.com/', {waitUntil: 'load', timeout: 0});
 
   page.waitForNavigation({ waitUntil: 'domcontentloaded' });
 
