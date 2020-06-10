@@ -7,38 +7,39 @@ puppeteer.use(StealthPlugin());
 const options = require('./config.js') || {};
 const { initPage, delay } = require('./libs/utils');
 const axios = require('axios');
-const login = require('./login');
-const verifyActivity = require('./verifyActivity');
+// const login = require('./login');
 const verifyActivityMobile = require('./verifyActivityMobile');
 
 const base_url = options.base_url;
 
 (async () => {
   // call api for get data
-  // let verifyDetails = {}
-  // async function getVerifyData() {
-  //   return new Promise((resolve, reject) => {
-  //     const payload = { device_name: 'facebook_1' };
-  //     axios.post(base_url + '/lua/facebook_calling', payload)
-  //       .then((response) => {
-  //         verifyDetails = response.data;
-  //         console.log(verifyDetails);
-  //         resolve();
-  //       })
-  //       .catch((error) => {
-  //         // handle error
-  //         console.log(error);
-  //         reject();
-  //       })
-  //   })
-  // }
   let verifyDetails = {
-    user_id: 501,
-    sub_id: 39,
-    action_link: 'https://www.facebook.com/profile.php?id=100023973350933&lst=100023973350933%3A100023973350933%3A1590548381&sk=about',
-    facebook_id: '100023973350933',
-    action_name: 'page_like',
-    criteria: 'Ki%E1%BA%BFm-Ti%E1%BB%81n-3s-106156554366493'
+    user_id: 13,
+    sub_id: 1,
+    action_name: 'page_share',
+    action_link: 'https://www.facebook.com/waffle.jam.773/posts/137084427966555',
+    criteria: 'najibrazak',
+    facebook_id:'100049949943171',
+    keyword:"wow",
+    tag_people: 3
+  }
+
+  async function getVerifyData() {
+    return new Promise((resolve, reject) => {
+      const payload = { device_name: 'facebook_1' };
+      axios.post(base_url + '/lua/facebook_calling', payload)
+        .then((response) => {
+          verifyDetails = response.data;
+          console.log(verifyDetails);
+          resolve();
+        })
+        .catch((error) => {
+          // handle error
+          console.log(error);
+          reject();
+        })
+    })
   }
   // fire api for fail
   async function completeVerify(status, payload) {
@@ -64,27 +65,22 @@ const base_url = options.base_url;
   });
 
   console.log('initializing...');
-  let page = await initPage(browser, false, true);
-  let pass = false;
-  await login(page);
-  pass = true;
-
   // calling the api from backend
   let loop = 0;
   let completed = true;
 
   do {
-    if (completed) {
-      if (verifyDetails === 'no task') {
-        await delay(60000);
-        await getVerifyData();
-      } else {
-        await delay(3000);
-        await getVerifyData();
-      }
-    }
+    // if (completed) {
+    //   if (verifyDetails === 'no task') {
+    //     await delay(60000);
+    //     await getVerifyData();
+    //   } else {
+    //     await delay(3000);
+    //     await getVerifyData();
+    //   }
+    // }
 
-    await delay(4000);
+    await delay(2000);
     if (verifyDetails !== 'no task') {
       try {
         console.log('starting verify activity process');
@@ -99,12 +95,11 @@ const base_url = options.base_url;
         completed = true;
       } catch (e) {
         console.log('ERROR', e);
-        console.error(' action link not found...');
-        await completeVerify('fail', verifyDetails);
+        // await completeVerify('fail', verifyDetails);
         completed = true;
       }
     }
     loop++
   }
-  while (loop < 10);
+  while (loop < 500);
 })();

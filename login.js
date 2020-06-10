@@ -12,16 +12,16 @@ async function login(page) {
   const credential = options.credential[ranNum];
 
   console.log('browsing to https://www.facebook.com/...');
-  await page.goto('https://facebook.com/', {waitUntil: 'load', timeout: 0});
+  await page.goto('https://m.facebook.com/login/?ref=dbl&fl', {waitUntil: 'load', timeout: 0});
 
   page.waitForNavigation({ waitUntil: 'domcontentloaded' });
 
-  await page.$eval('#email', (el, value) => { el.value = value }, credential.username);
-  await page.$eval('#pass', (el, value) => { el.value = value }, credential.pwd);
+  await page.$eval('#m_login_email', (el, value) => { el.value = value }, credential.username);
+  await page.$eval('#m_login_password', (el, value) => { el.value = value }, credential.pwd);
   console.log('credential input completed');
 
   await Promise.all([
-    page.$eval('#loginbutton', btn => btn.click()),
+    page.$eval('[data-sigil~="m_login_button"]', btn => btn.click()),
     page.waitForNavigation({ waitUntil: 'networkidle0' }),
   ]);
   
