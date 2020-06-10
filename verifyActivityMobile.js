@@ -121,7 +121,7 @@ async function checkKeywordOrTagPeople(page, verifyDetails) {
 
 async function verifyPostFunction(page, post, verifyDetails, keyword) {
   console.log('post:', post);
-  if (post.includes(verifyDetails.facebook_id) && post.includes(verifyDetails.criteria) && post.includes(keyword)) {
+  if (post.includes(verifyDetails.facebook_id) && post.includes(keyword)) {
     console.log('verify post success');
     completeVerify('success', verifyDetails);
     await page.close();
