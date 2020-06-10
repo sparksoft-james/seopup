@@ -14,16 +14,18 @@ const base_url = options.base_url;
 
 (async () => {
   // call api for get data
-  let verifyDetails = {
-    user_id: 13,
-    sub_id: 1,
-    action_name: 'page_share',
-    action_link: 'https://www.facebook.com/waffle.jam.773/posts/137084427966555',
-    criteria: 'najibrazak',
-    facebook_id:'100049949943171',
-    keyword:"wow",
-    tag_people: 3
-  }
+  // let verifyDetails = {
+  //   user_id: 13,
+  //   sub_id: 1,
+  //   action_name: 'page_share',
+  //   action_link: 'https://www.facebook.com/waffle.jam.773/posts/137084427966555',
+  //   criteria: 'najibrazak',
+  //   facebook_id:'100049949943171',
+  //   keyword:"wow",
+  //   tag_count: 3
+  // }
+
+  let verifyDetails = {}
 
   async function getVerifyData() {
     return new Promise((resolve, reject) => {
@@ -70,15 +72,15 @@ const base_url = options.base_url;
   let completed = true;
 
   do {
-    // if (completed) {
-    //   if (verifyDetails === 'no task') {
-    //     await delay(60000);
-    //     await getVerifyData();
-    //   } else {
-    //     await delay(3000);
-    //     await getVerifyData();
-    //   }
-    // }
+    if (completed) {
+      if (verifyDetails === 'no task') {
+        await delay(60000);
+        await getVerifyData();
+      } else {
+        await delay(3000);
+        await getVerifyData();
+      }
+    }
 
     await delay(2000);
     if (verifyDetails !== 'no task') {

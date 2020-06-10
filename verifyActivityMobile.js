@@ -10,16 +10,16 @@ async function completeVerify(status, payload) {
     const obj = { user_id: payload.user_id, sub_id: payload.sub_id };
     console.log('firing api payload', obj)
 
-    // axios.post(base_url + `/main-mission/${apiKey}`, obj)
-    //   .then(function (response) {
-    //     console.log(response.data);
-    //     resolve();
-    //   })
-    //   .catch(function (error) {
-    //     // handle error
-    //     console.log(error);
-    //     reject();
-    //   })
+    axios.post(base_url + `/main-mission/${apiKey}`, obj)
+      .then(function (response) {
+        console.log(response.data);
+        resolve();
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+        reject();
+      })
   })
 }
 
@@ -92,7 +92,7 @@ async function checkKeywordOrTagPeople(page, verifyDetails) {
     }
   }
   // got tag people
-  if (verifyDetails.tag_people) {
+  if (verifyDetails.tag_count) {
     console.log('need to check tag people');
     const taggedPeople = await page.$$eval('._5rgt > p > a', a => a.map(element => element.innerHTML.trim()));
     let tagCount = 0
@@ -106,7 +106,7 @@ async function checkKeywordOrTagPeople(page, verifyDetails) {
       }
     })
     console.log('tagCount:', tagCount);
-    if (tagCount >= verifyDetails.tag_people) {
+    if (tagCount >= verifyDetails.tag_count) {
       tag = true;
     } else {
       tag = false;
