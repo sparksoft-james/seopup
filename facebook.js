@@ -103,5 +103,5 @@ const base_url = options.base_url;
     }
     loop++
   }
-  while (loop < 500);
+  while (loop < 20);
 })();
