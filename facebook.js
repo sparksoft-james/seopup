@@ -86,15 +86,20 @@ const base_url = options.base_url;
     if (verifyDetails !== 'no task') {
       try {
         console.log('starting verify activity process');
-        if (verifyDetails.action_link && !verifyDetails.action_link.includes('m.facebook.com')) {
-          console.log('the link is desktop version, change to m.facebook');
-          verifyDetails.action_link = verifyDetails.action_link.replace('www.facebook.com', 'm.facebook.com');
-          console.log('action_link:', verifyDetails.action_link);
-        }
+        console.log(verifyDetails.action_link);
 
-        await verifyActivityMobile(browser, verifyDetails);
-        console.log('complete verify activity process');
-        completed = true;
+        if(verifyDetails.action_link) {
+          if (!verifyDetails.action_link.includes('m.facebook.com')) {
+            console.log('the link is desktop version, change to m.facebook');
+            verifyDetails.action_link = verifyDetails.action_link.replace('www.facebook.com', 'm.facebook.com');
+            console.log('action_link:', verifyDetails.action_link);
+          }
+          await verifyActivityMobile(browser, verifyDetails);
+          console.log('complete verify activity process');
+          completed = true;
+        } else {
+          await completeVerify('fail', verifyDetails);
+        }
       } catch (e) {
         console.log('ERROR', e);
         await completeVerify('fail', verifyDetails);
