@@ -88,7 +88,7 @@ const base_url = options.base_url;
         console.log('starting verify activity process');
         console.log(verifyDetails.action_link);
 
-        if(verifyDetails.action_link) {
+        if(verifyDetails.action_link.includes('facebook')) {
           if (!verifyDetails.action_link.includes('m.facebook.com')) {
             console.log('the link is desktop version, change to m.facebook');
             verifyDetails.action_link = verifyDetails.action_link.replace('www.facebook.com', 'm.facebook.com');
