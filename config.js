@@ -1,6 +1,12 @@
 const path = require('path');
 
+const FACEBOOK_ERROR_STATUS = {
+  LINK_INVALID: "link_invalid",
+  FACEBOOK_ID_INVALID: "facebook_id_invalid",
+};
+
 module.exports = {
+  FACEBOOK_ERROR_STATUS,
   base_url: 'https://api.luca4u.com/hu-pan-backend/hupan/public/api',
   launch_options: {
     headless: true,
