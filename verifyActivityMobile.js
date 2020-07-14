@@ -1,13 +1,13 @@
 const axios = require('axios');
 
 const { initPage } = require('./libs/utils');
-const { base_url } = require('./config');
+const { base_url, FACEBOOK_ERROR_STATUS } = require('./config');
 
-async function completeVerify(status, payload) {
+async function completeVerify(status, payload, $errorMessage = '') {
   return new Promise(function (resolve, reject) {
 
     const apiKey = status === 'success' ? 'deviceComplete' : 'reject'
-    const obj = { user_id: payload.user_id, sub_id: payload.sub_id };
+    const obj = { user_id: payload.user_id, sub_id: payload.sub_id, error_msg: $errorMessage };
     console.log('firing api payload', obj)
 
     axios.post(base_url + `/main-mission/${apiKey}`, obj)
@@ -67,11 +67,11 @@ async function verifyActivityMobile(browser, verifyDetails) {
 
     } else {
       console.log('fail at tag or keyword');
-      completeVerify('fail', verifyDetails);
+      completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.TAG_KEYWORD_INVALID);
     }
   } catch (e) {
     console.log('catch error:', e)
-    completeVerify('fail', verifyDetails);
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
     await page.close();
     throw (e);
   }
@@ -127,7 +127,7 @@ async function verifyPostFunction(page, post, verifyDetails, keyword) {
     await page.close();
   } else {
     console.log('user id not found: verify post fail');
-    completeVerify('fail', verifyDetails);
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.FACEBOOK_ID_INVALID);
     await page.close();
     throw ({ rejectCode: 1, message: 'user not found' });
   }
@@ -140,7 +140,7 @@ async function verifyPageFunction(page, post, verifyDetails, keyword, likeItem) 
     await page.close();
   } else {
     console.log('user id not found: verify fail');
-    completeVerify('fail', verifyDetails);
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.FACEBOOK_ID_INVALID);
     await page.close();
     throw ({ rejectCode: 1, message: 'user not found' });
   }
