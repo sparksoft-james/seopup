@@ -108,5 +108,6 @@ const base_url = options.base_url;
     }
     loop++
   }
-  while (true);
+  while (loop < 10);
+  process.exit();
 })();
