@@ -115,5 +115,6 @@ const facebook_error_status = options.FACEBOOK_ERROR_STATUS;
     } 
     loop++
   }
-  while (true);
+  while (loop < 10);
+  process.exit();
 })();
