@@ -64,7 +64,6 @@ async function verifyActivityMobile(browser, verifyDetails) {
         const likeItem = await page.$eval('a[data-sigil=show-save-caret-nux-on-click]', el => el.getAttribute('href'));
         await verifyPageFunction(page, post, verifyDetails, 'share_id', likeItem);
       }
-
     } else {
       console.log('fail at tag or keyword');
       completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.TAG_KEYWORD_INVALID);
@@ -125,6 +124,8 @@ async function verifyPostFunction(page, post, verifyDetails, keyword) {
     console.log('verify post success');
     completeVerify('success', verifyDetails);
     await page.close();
+  } else if (!post.includes(keyword)) {
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
     console.log('user id not found: verify post fail');
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.FACEBOOK_ID_INVALID);
@@ -138,6 +139,8 @@ async function verifyPageFunction(page, post, verifyDetails, keyword, likeItem) 
     console.log(`verify ${verifyDetails.action_name} success`);
     completeVerify('success', verifyDetails);
     await page.close();
+  } else if (post.includes(keyword) == false || likeItem.includes(decodeURI(verifyDetails.criteria)) == false) {
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
     console.log('user id not found: verify fail');
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.FACEBOOK_ID_INVALID);

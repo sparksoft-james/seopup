@@ -4,6 +4,7 @@ const FACEBOOK_ERROR_STATUS = {
   LINK_INVALID: "link_invalid",
   FACEBOOK_ID_INVALID: "facebook_id_invalid",
   TAG_KEYWORD_INVALID: "tag_or_keyword_invalid",
+  INTERNAL_ERROR: "internal_error",
 };
 
 module.exports = {

@@ -11,6 +11,7 @@ const axios = require('axios');
 const verifyActivityMobile = require('./verifyActivityMobile');
 
 const base_url = options.base_url;
+const facebook_error_status = options.FACEBOOK_ERROR_STATUS;
 
 (async () => {
   // call api for get data
@@ -44,18 +45,20 @@ const base_url = options.base_url;
     })
   }
   // fire api for fail
-  async function completeVerify(status, payload) {
+  async function completeVerify(status, payload, $errorMessage = '') {
     return new Promise(function (resolve, reject) {
       const apiKey = status === 'success' ? 'deviceComplete' : 'reject'
-      const obj = { user_id: payload.user_id, sub_id: payload.sub_id };
+      const obj = { user_id: payload.user_id, sub_id: payload.sub_id, error_msg: $errorMessage };
       console.log(obj)
       axios.post(base_url + `/main-mission/${apiKey}`, obj)
         .then(function (response) {
+          console.log('response.data');
           console.log(response.data);
           resolve();
         })
         .catch(function (error) {
           // handle error
+          console.log('error');
           console.log(error);
           reject();
         })
@@ -85,11 +88,12 @@ const base_url = options.base_url;
     await delay(2000);
     if (verifyDetails !== 'no task') {
       try {
+        
         console.log('starting verify activity process');
         console.log(verifyDetails.action_link);
 
         if(verifyDetails.action_link.includes('facebook')) {
-          if (!verifyDetails.action_link.includes('m.facebook.com')) {
+          if (!verifyDetails.action_link.includes('m.facebook.com')) { 
             console.log('the link is desktop version, change to m.facebook');
             verifyDetails.action_link = verifyDetails.action_link.replace('www.facebook.com', 'm.facebook.com');
             console.log('action_link:', verifyDetails.action_link);
@@ -98,14 +102,17 @@ const base_url = options.base_url;
           console.log('complete verify activity process');
           completed = true;
         } else {
-          await completeVerify('fail', verifyDetails);
-        }
+          console.log('fail verify activity process ERROR');
+
+          await completeVerify('fail', verifyDetails, facebook_error_status.LINK_INVALID);
+        
+        } 
       } catch (e) {
         console.log('ERROR', e);
-        await completeVerify('fail', verifyDetails);
+        await completeVerify('fail', verifyDetails, facebook_error_status.INTERNAL_ERROR);
         completed = true;
       }
-    }
+    } 
     loop++
   }
   while (loop < 10);
