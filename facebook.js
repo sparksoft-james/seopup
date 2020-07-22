@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer-extra');
+require('dotenv').config();
 
 // add stealth plugin and use defaults (all evasion techniques)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -12,6 +13,10 @@ const verifyActivityMobile = require('./verifyActivityMobile');
 
 const base_url = options.base_url;
 const facebook_error_status = options.FACEBOOK_ERROR_STATUS;
+
+const device_name = process.env.DEVICE_NAME;
+
+console.log('device_name:', device_name);
 
 (async () => {
   // call api for get data
@@ -30,7 +35,7 @@ const facebook_error_status = options.FACEBOOK_ERROR_STATUS;
 
   async function getVerifyData() {
     return new Promise((resolve, reject) => {
-      const payload = { device_name: 'facebook_1' };
+      const payload = { device_name };
       axios.post(base_url + '/lua/facebook_calling', payload)
         .then((response) => {
           verifyDetails = response.data;
