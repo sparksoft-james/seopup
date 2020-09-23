@@ -28,15 +28,20 @@ async function verifyActivityMobile(browser, verifyDetails) {
   try {
     console.log('go to activity link: ', verifyDetails.action_link);
 
-    await page.goto(verifyDetails.action_link, { waitUntil: 'load', timeout: 0 });
+    await page.authenticate({
+      username: 'lum-customer-hl_8acf1767-zone-static',
+      password: 'gqq6sghvkmlb'
+    });
+
+    await page.goto(verifyDetails.action_link, { waitUntil: 'load'});
 
     console.log('successful onboard verify activity page');
 
-    const tagAndKeyword = await checkKeywordOrTagPeople(page, verifyDetails)
+    // const tagAndKeyword = await checkKeywordOrTagPeople(page, verifyDetails)
 
-    console.log('tagAndKeyword:', tagAndKeyword);
+    // console.log('tagAndKeyword:', tagAndKeyword);
 
-    if (tagAndKeyword) {
+    // if (tagAndKeyword) {
       if (verifyDetails.action_name == 'post_like' || verifyDetails.action_name == 'post_comment') {
         const post = await page.$eval('article', el => el.getAttribute('data-store'));
         if (verifyDetails.action_name == 'post_like') {
@@ -64,10 +69,11 @@ async function verifyActivityMobile(browser, verifyDetails) {
         const likeItem = await page.$eval('a[data-sigil=show-save-caret-nux-on-click]', el => el.getAttribute('href'));
         await verifyPageFunction(page, post, verifyDetails, 'share_id', likeItem);
       }
-    } else {
-      console.log('fail at tag or keyword');
-      completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.TAG_KEYWORD_INVALID);
-    }
+
+    // } else {
+    //   console.log('fail at tag or keyword');
+    //   completeVerify('fail', verifyDetails);
+    // }
   } catch (e) {
     console.log('catch error:', e)
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
