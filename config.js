@@ -9,7 +9,7 @@ const FACEBOOK_ERROR_STATUS = {
 
 module.exports = {
   FACEBOOK_ERROR_STATUS,
-  base_url: 'https://api.luca4u.com/hu-pan-backend/hupan/public/api',
+  base_url: 'https://tgp399.com/hu-pan-backend/hupan/public/api',
   launch_options: {
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--incognito', "--disable-gpu", `--proxy-server=zproxy.lum-superproxy.io:22225`],
