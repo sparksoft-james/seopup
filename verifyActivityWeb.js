@@ -65,7 +65,7 @@ async function verifyActivityWeb(browser, verifyDetails) {
 
   } catch (e) {
     console.log('catch error:', e)
-    // completeVerify('fail', verifyDetails);
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
     await page.close();
     throw (e);
   }
@@ -74,64 +74,65 @@ async function verifyActivityWeb(browser, verifyDetails) {
 // include 3 things (user facebook_id, post id, keyword)
 // keyword type: EntLikeEdgeStory (post_like), EntCommentNodeBasedEdgeStory (post_comment), EntStatusCreationStory (post_share, page_share), EntFanPageEdgeStory (page_like)
 
-async function verifyPostFunction(page, dom, verifyDetails, keyword) {
-
-  if (dom.includes(verifyDetails.facebook_id) && dom.includes(keyword) && dom.includes(verifyDetails.criteria)) {
+async function verifyPostFunction(page, post, verifyDetails, keyword) {
+  if (post.includes(verifyDetails.facebook_id) && post.includes(keyword) && post.includes(verifyDetails.criteria)) {
     console.log('verify post success');
-    // completeVerify('success', verifyDetails);
+    completeVerify('success', verifyDetails);
     await page.close();
+  } else if (!post.includes(keyword)) {
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
     console.log('user id not found: verify post fail');
-    console.log('jump here');
-
-    // completeVerify('fail', verifyDetails);
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.FACEBOOK_ID_INVALID);
     await page.close();
     throw ({ rejectCode: 1, message: 'user not found' });
   }
 }
 
-async function verifySharePostFunction(page, dom, verifyDetails, shareKeyword, likeKeyword) {
+async function verifySharePostFunction(page, post, verifyDetails, shareKeyword, likeKeyword) {
   // include 3 item and not include like item
-  if (dom.includes(verifyDetails.facebook_id) && dom.includes(verifyDetails.criteria) && dom.includes(shareKeyword) && !dom.includes(likeKeyword)) {
+  if (post.includes(verifyDetails.facebook_id) && post.includes(verifyDetails.criteria) && post.includes(shareKeyword) && !post.includes(likeKeyword)) {
     console.log('verify post success');
-    // completeVerify('success', verifyDetails);
+    completeVerify('success', verifyDetails);
     await page.close();
+  } else if (!post.includes(shareKeyword) || post.includes(likeKeyword)) {
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
     console.log('user id not found: verify post fail');
-    // completeVerify('fail', verifyDetails);
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.FACEBOOK_ID_INVALID);
     await page.close();
     throw ({ rejectCode: 1, message: 'user not found' });
   }
 }
 
-async function verifyPageFunction(page, dom, verifyDetails, keyword, likeItem) {
-  if (dom.includes(verifyDetails.facebook_id) && dom.includes(keyword) && likeItem.includes(decodeURI(verifyDetails.criteria))) {
+async function verifyPageFunction(page, post, verifyDetails, keyword, likeItem) {
+  if (post.includes(verifyDetails.facebook_id) && post.includes(keyword) && likeItem.includes(decodeURI(verifyDetails.criteria))) {
     console.log(`verify ${verifyDetails.action_name} success`);
-    // completeVerify('success', verifyDetails);
+    completeVerify('success', verifyDetails);
     await page.close();
+  } else if (post.includes(keyword) == false) {
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
     console.log('user id not found: verify fail');
-    // completeVerify('fail', verifyDetails);
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.FACEBOOK_ID_INVALID);
     await page.close();
     throw ({ rejectCode: 1, message: 'user not found' });
   }
 }
 
-async function verifyPageShareFunction(page, dom, verifyDetails, likeItem, shareKeyword, likeKeyword) {
+async function verifyPageShareFunction(page, post, verifyDetails, likeItem, shareKeyword, likeKeyword) {
   if (dom.includes(verifyDetails.facebook_id) && likeItem.includes(decodeURI(verifyDetails.criteria) && dom.includes(shareKeyword) && !dom.includes(likeKeyword))) {
     console.log(`verify ${verifyDetails.action_name} success`);
-    // completeVerify('success', verifyDetails);
+    completeVerify('success', verifyDetails);
     await page.close();
+  } else if (!post.includes(shareKeyword) || post.includes(likeKeyword)) {
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
     console.log('user id not found: verify fail');
-    // completeVerify('fail', verifyDetails);
+    completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.FACEBOOK_ID_INVALID);
     await page.close();
     throw ({ rejectCode: 1, message: 'user not found' });
   }
 }
-
-
-
-
 
 module.exports = verifyActivityWeb;

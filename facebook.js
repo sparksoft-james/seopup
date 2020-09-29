@@ -19,7 +19,6 @@ const device_name = process.env.DEVICE_NAME;
 
 console.log('device_name:', device_name);
 
-const device_name = process.env.DEVICE_NAME;
 
 (async () => {
   // call api for get data
