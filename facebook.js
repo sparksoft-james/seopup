@@ -13,6 +13,11 @@ const verifyActivityMobile = require('./verifyActivityMobile');
 const verifyActivityWeb = require('./verifyActivityWeb');
 
 const base_url = options.base_url;
+const facebook_error_status = options.FACEBOOK_ERROR_STATUS;
+
+const device_name = process.env.DEVICE_NAME;
+
+console.log('device_name:', device_name);
 
 const device_name = process.env.DEVICE_NAME;
 
@@ -31,7 +36,7 @@ const device_name = process.env.DEVICE_NAME;
 
   async function getVerifyData() {
     return new Promise((resolve, reject) => {
-      const payload = { device_name: device_name };
+      const payload = { device_name };
       axios.post(base_url + '/lua/facebook_calling', payload)
         .then((response) => {
           verifyDetails = response.data;
@@ -46,18 +51,20 @@ const device_name = process.env.DEVICE_NAME;
     })
   }
   // fire api for fail
-  async function completeVerify(status, payload) {
+  async function completeVerify(status, payload, $errorMessage = '') {
     return new Promise(function (resolve, reject) {
       const apiKey = status === 'success' ? 'deviceComplete' : 'reject'
-      const obj = { user_id: payload.user_id, sub_id: payload.sub_id };
+      const obj = { user_id: payload.user_id, sub_id: payload.sub_id, error_msg: $errorMessage };
       console.log(obj)
       axios.post(base_url + `/main-mission/${apiKey}`, obj)
         .then(function (response) {
+          console.log('response.data');
           console.log(response.data);
           resolve();
         })
         .catch(function (error) {
           // handle error
+          console.log('error');
           console.log(error);
           reject();
         })
@@ -87,6 +94,7 @@ const device_name = process.env.DEVICE_NAME;
     await delay(2000);
     if (verifyDetails !== 'no task') {
       try {
+        
         console.log('starting verify activity process');
         console.log(verifyDetails.action_link);
 
@@ -103,15 +111,19 @@ const device_name = process.env.DEVICE_NAME;
           console.log('complete verify activity process');
           // completed = true;
         } else {
-          // await completeVerify('fail', verifyDetails);
-        }
+          console.log('fail verify activity process ERROR');
+
+          await completeVerify('fail', verifyDetails, facebook_error_status.LINK_INVALID);
+        
+        } 
       } catch (e) {
         console.log('ERROR', e);
-        // await completeVerify('fail', verifyDetails);
-        // completed = true;
+        await completeVerify('fail', verifyDetails, facebook_error_status.INTERNAL_ERROR);
+        completed = true;
       }
-    }
+    } 
     loop++
   }
-  while (true);
+  while (loop < 10);
+  process.exit();
 })();
