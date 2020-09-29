@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const { initPage } = require('./libs/utils');
-const { base_url } = require('./config');
+const { base_url, FACEBOOK_ERROR_STATUS } = require('./config');
 
 async function completeVerify(status, payload) {
   return new Promise(function (resolve, reject) {
@@ -80,6 +80,7 @@ async function verifyPostFunction(page, post, verifyDetails, keyword) {
     completeVerify('success', verifyDetails);
     await page.close();
   } else if (!post.includes(keyword)) {
+    console.log('keyword not found: verify fail');
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
     console.log('user id not found: verify post fail');
@@ -96,6 +97,7 @@ async function verifySharePostFunction(page, post, verifyDetails, shareKeyword, 
     completeVerify('success', verifyDetails);
     await page.close();
   } else if (!post.includes(shareKeyword) || post.includes(likeKeyword)) {
+    console.log('keyword not found: verify fail');
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
     console.log('user id not found: verify post fail');
@@ -111,6 +113,7 @@ async function verifyPageFunction(page, post, verifyDetails, keyword, likeItem) 
     completeVerify('success', verifyDetails);
     await page.close();
   } else if (post.includes(keyword) == false) {
+    console.log('keyword not found: verify fail');
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
     console.log('user id not found: verify fail');
@@ -126,6 +129,7 @@ async function verifyPageShareFunction(page, post, verifyDetails, likeItem, shar
     completeVerify('success', verifyDetails);
     await page.close();
   } else if (!post.includes(shareKeyword) || post.includes(likeKeyword)) {
+    console.log('keyword not found: verify fail');
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
     console.log('user id not found: verify fail');

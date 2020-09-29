@@ -8,7 +8,6 @@ puppeteer.use(StealthPlugin());
 const options = require('./config.js') || {};
 const { initPage, delay } = require('./libs/utils');
 const axios = require('axios');
-// const login = require('./login');
 const verifyActivityMobile = require('./verifyActivityMobile');
 const verifyActivityWeb = require('./verifyActivityWeb');
 
@@ -22,16 +21,16 @@ console.log('device_name:', device_name);
 
 (async () => {
   // call api for get data
-  let verifyDetails = {
-    user_id: 13,
-    sub_id: 1,
-    action_name: 'post_share',
-    action_link: 'https://m.facebook.com/james.chin0531/posts/1178389305875668 ',
-    criteria: '3195373690511802',
-    facebook_id:'100011138286242',
-  }
+  // let verifyDetails = {
+  //   user_id: 13,
+  //   sub_id: 1,
+  //   action_name: 'post_share',
+  //   action_link: 'https://www.facebook.com/story.php?story_fbid=973462283128744&substory_index=2&id=100013949430763&ref=bookmarks',
+  //   criteria: '694353118091668',
+  //   facebook_id:'100013949430763',
+  // }
 
-  // let verifyDetails = {}
+  let verifyDetails = {}
 
   async function getVerifyData() {
     return new Promise((resolve, reject) => {
@@ -80,15 +79,15 @@ console.log('device_name:', device_name);
   let completed = true;
 
   do {
-    // if (completed) {
-    //   if (verifyDetails === 'no task') {
-    //     await delay(60000);
-    //     await getVerifyData();
-    //   } else {
-    //     await delay(3000);
-    //     await getVerifyData();
-    //   }
-    // }
+    if (completed) {
+      if (verifyDetails === 'no task') {
+        await delay(60000);
+        await getVerifyData();
+      } else {
+        await delay(3000);
+        await getVerifyData();
+      }
+    }
 
     await delay(2000);
     if (verifyDetails !== 'no task') {
