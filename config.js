@@ -1,7 +1,10 @@
 const path = require('path');
+require('dotenv').config();
+
+const base_url = process.env.BASE_URL;
 
 module.exports = {
-  base_url: 'https://tgp399.com/hu-pan-backend/hupan/public/api',
+  base_url: base_url,
   launch_options: {
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--incognito', "--disable-gpu", `--proxy-server=zproxy.lum-superproxy.io:22225`],

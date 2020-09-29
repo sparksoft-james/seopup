@@ -1,6 +1,4 @@
 const axios = require('axios');
-const devices = require('puppeteer/DeviceDescriptors');
-const iPhone = devices['iPhone 6'];
 
 const { initPage } = require('./libs/utils');
 const { base_url } = require('./config');
@@ -25,9 +23,8 @@ async function completeVerify(status, payload) {
   })
 }
 
-async function verifyActivityMobile(browser, verifyDetails) {
+async function verifyActivityWeb(browser, verifyDetails) {
   const page = await initPage(browser, true);
-  
   try {
     console.log('go to activity link: ', verifyDetails.action_link);
 
@@ -39,60 +36,63 @@ async function verifyActivityMobile(browser, verifyDetails) {
     await page.goto(verifyDetails.action_link, { waitUntil: 'load'});
 
     console.log('successful onboard verify activity page');
+
+    const dom = await page.$eval('body', el => el.innerHTML);
+
       if (verifyDetails.action_name == 'post_like' || verifyDetails.action_name == 'post_comment') {
-        const post = await page.$eval('article', el => el.getAttribute('data-store'));
-        console.log(post);
         if (verifyDetails.action_name == 'post_like') {
           console.log('start verify like action');
-          verifyPostFunction(page, post, verifyDetails, 'EntLikeEdgeStory');
+          verifyPostFunction(page, dom, verifyDetails, 'EntLikeEdgeStory',);
         } else if (verifyDetails.action_name == 'post_comment') {
           console.log('start verify like comment');
-          await verifyPostFunction(page, post, verifyDetails, 'EntCommentNodeBasedEdgeStory');
+          await verifyPostFunction(page, dom, verifyDetails, 'EntCommentNodeBasedEdgeStory');
         }
       } else if (verifyDetails.action_name == 'post_share') {
         console.log('start verify share');
-        const post = await page.$eval('.async_like', el => el.getAttribute('data-store'));
-        await verifySharePostFunction(page, post, verifyDetails, 'EntStatusCreationStory', 'EntLikeEdgeStory');
+        await verifySharePostFunction(page, dom, verifyDetails, 'EntStatusCreationStory','EntLikeEdgeStory');
 
       } else if (verifyDetails.action_name == 'page_like') {
         console.log('start verify page like');
-        const post = await page.$eval('.async_like', el => el.getAttribute('data-store'));
         const likeItem = await page.$eval('a[data-sigil=show-save-caret-nux-on-click]', el => el.getAttribute('href'));
         console.log(likeItem)
-        await verifyPageFunction(page, post, verifyDetails, 'EntFanPageEdgeStory', likeItem);
+        await verifyPageFunction(page, dom, verifyDetails, 'EntFanPageEdgeStory', likeItem);
 
       } else if (verifyDetails.action_name == 'page_share') {
         console.log('start verify page share');
-        const post = await page.$eval('.async_like', el => el.getAttribute('data-store'));
         const likeItem = await page.$eval('a[data-sigil=show-save-caret-nux-on-click]', el => el.getAttribute('href'));
-        await verifyPageFunction(page, post, verifyDetails, likeItem, 'EntStatusCreationStory', 'EntLikeEdgeStory');
+        await verifyPageShareFunction(page, dom, verifyDetails, likeItem , 'EntStatusCreationStory', 'EntLikeEdgeStory');
       }
+
   } catch (e) {
     console.log('catch error:', e)
     // completeVerify('fail', verifyDetails);
-    // await page.close();
+    await page.close();
     throw (e);
   }
 }
 
-async function verifyPostFunction(page, post, verifyDetails, keyword) {
-  console.log('post:', post);
-  if (post.includes(verifyDetails.facebook_id) && post.includes(keyword)) {
+// include 3 things (user facebook_id, post id, keyword)
+// keyword type: EntLikeEdgeStory (post_like), EntCommentNodeBasedEdgeStory (post_comment), EntStatusCreationStory (post_share, page_share), EntFanPageEdgeStory (page_like)
+
+async function verifyPostFunction(page, dom, verifyDetails, keyword) {
+
+  if (dom.includes(verifyDetails.facebook_id) && dom.includes(keyword) && dom.includes(verifyDetails.criteria)) {
     console.log('verify post success');
     // completeVerify('success', verifyDetails);
     await page.close();
   } else {
     console.log('user id not found: verify post fail');
+    console.log('jump here');
+
     // completeVerify('fail', verifyDetails);
     await page.close();
     throw ({ rejectCode: 1, message: 'user not found' });
   }
 }
 
-
-async function verifySharePostFunction(page, post, verifyDetails, shareKeyword, likeKeyword) {
+async function verifySharePostFunction(page, dom, verifyDetails, shareKeyword, likeKeyword) {
   // include 3 item and not include like item
-  if (post.includes(verifyDetails.facebook_id) && post.includes(verifyDetails.criteria) && post.includes(shareKeyword) && !post.includes(likeKeyword)) {
+  if (dom.includes(verifyDetails.facebook_id) && dom.includes(verifyDetails.criteria) && dom.includes(shareKeyword) && !dom.includes(likeKeyword)) {
     console.log('verify post success');
     // completeVerify('success', verifyDetails);
     await page.close();
@@ -104,8 +104,8 @@ async function verifySharePostFunction(page, post, verifyDetails, shareKeyword, 
   }
 }
 
-async function verifyPageFunction(page, post, verifyDetails, keyword, likeItem) {
-  if (post.includes(verifyDetails.facebook_id) && post.includes(keyword) && likeItem.includes(decodeURI(verifyDetails.criteria))) {
+async function verifyPageFunction(page, dom, verifyDetails, keyword, likeItem) {
+  if (dom.includes(verifyDetails.facebook_id) && dom.includes(keyword) && likeItem.includes(decodeURI(verifyDetails.criteria))) {
     console.log(`verify ${verifyDetails.action_name} success`);
     // completeVerify('success', verifyDetails);
     await page.close();
@@ -132,4 +132,6 @@ async function verifyPageShareFunction(page, dom, verifyDetails, likeItem, share
 
 
 
-module.exports = verifyActivityMobile;
+
+
+module.exports = verifyActivityWeb;

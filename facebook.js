@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer-extra');
+require('dotenv').config();
 
 // add stealth plugin and use defaults (all evasion techniques)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -9,27 +10,28 @@ const { initPage, delay } = require('./libs/utils');
 const axios = require('axios');
 // const login = require('./login');
 const verifyActivityMobile = require('./verifyActivityMobile');
+const verifyActivityWeb = require('./verifyActivityWeb');
 
 const base_url = options.base_url;
 
+const device_name = process.env.DEVICE_NAME;
+
 (async () => {
   // call api for get data
-  // let verifyDetails = {
-  //   user_id: 13,
-  //   sub_id: 1,
-  //   action_name: 'page_share',
-  //   action_link: 'https://www.facebook.com/waffle.jam.773/posts/137084427966555',
-  //   criteria: 'najibrazak',
-  //   facebook_id:'100049949943171',
-  //   keyword:"wow",
-  //   tag_count: 3
-  // }
+  let verifyDetails = {
+    user_id: 13,
+    sub_id: 1,
+    action_name: 'post_share',
+    action_link: 'https://m.facebook.com/james.chin0531/posts/1178389305875668 ',
+    criteria: '3195373690511802',
+    facebook_id:'100011138286242',
+  }
 
-  let verifyDetails = {}
+  // let verifyDetails = {}
 
   async function getVerifyData() {
     return new Promise((resolve, reject) => {
-      const payload = { device_name: 'facebook_1' };
+      const payload = { device_name: device_name };
       axios.post(base_url + '/lua/facebook_calling', payload)
         .then((response) => {
           verifyDetails = response.data;
@@ -72,15 +74,15 @@ const base_url = options.base_url;
   let completed = true;
 
   do {
-    if (completed) {
-      if (verifyDetails === 'no task') {
-        await delay(60000);
-        await getVerifyData();
-      } else {
-        await delay(3000);
-        await getVerifyData();
-      }
-    }
+    // if (completed) {
+    //   if (verifyDetails === 'no task') {
+    //     await delay(60000);
+    //     await getVerifyData();
+    //   } else {
+    //     await delay(3000);
+    //     await getVerifyData();
+    //   }
+    // }
 
     await delay(2000);
     if (verifyDetails !== 'no task') {
@@ -90,20 +92,23 @@ const base_url = options.base_url;
 
         if(verifyDetails.action_link.includes('facebook')) {
           if (!verifyDetails.action_link.includes('m.facebook.com')) {
-            console.log('the link is desktop version, change to m.facebook');
-            verifyDetails.action_link = verifyDetails.action_link.replace('www.facebook.com', 'm.facebook.com');
-            console.log('action_link:', verifyDetails.action_link);
+            console.log('desktop version link');
+            await verifyActivityWeb(browser, verifyDetails);
+          } else {
+            console.log('mobile version link change to web version');
+            verifyDetails.action_link = verifyDetails.action_link.replace('m.facebook.com', 'www.facebook.com');
+            await verifyActivityWeb(browser, verifyDetails);
+            // await verifyActivityMobile(browser, verifyDetails);
           }
-          await verifyActivityMobile(browser, verifyDetails);
           console.log('complete verify activity process');
-          completed = true;
+          // completed = true;
         } else {
-          await completeVerify('fail', verifyDetails);
+          // await completeVerify('fail', verifyDetails);
         }
       } catch (e) {
         console.log('ERROR', e);
-        await completeVerify('fail', verifyDetails);
-        completed = true;
+        // await completeVerify('fail', verifyDetails);
+        // completed = true;
       }
     }
     loop++
