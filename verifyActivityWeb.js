@@ -49,7 +49,7 @@ async function verifyActivityWeb(browser, verifyDetails) {
         }
       } else if (verifyDetails.action_name == 'post_share') {
         console.log('start verify share');
-        await verifySharePostFunction(page, dom, verifyDetails, 'EntStatusCreationStory','EntLikeEdgeStory');
+        await verifySharePostFunction(page, dom, verifyDetails, 'EntStatusCreationStory','EntLikeEdgeStory', 'EntCommentNodeBasedEdgeStory');
 
       } else if (verifyDetails.action_name == 'page_like') {
         console.log('start verify page like');
@@ -60,9 +60,8 @@ async function verifyActivityWeb(browser, verifyDetails) {
       } else if (verifyDetails.action_name == 'page_share') {
         console.log('start verify page share');
         const likeItem = await page.$eval('a[data-sigil=show-save-caret-nux-on-click]', el => el.getAttribute('href'));
-        await verifyPageShareFunction(page, dom, verifyDetails, likeItem , 'EntStatusCreationStory', 'EntLikeEdgeStory');
+        await verifyPageShareFunction(page, dom, verifyDetails, likeItem , 'EntStatusCreationStory', 'EntLikeEdgeStory', 'EntCommentNodeBasedEdgeStory');
       }
-
   } catch (e) {
     console.log('catch error:', e)
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
@@ -90,13 +89,13 @@ async function verifyPostFunction(page, post, verifyDetails, keyword) {
   }
 }
 
-async function verifySharePostFunction(page, post, verifyDetails, shareKeyword, likeKeyword) {
+async function verifySharePostFunction(page, post, verifyDetails, shareKeyword, likeKeyword, commentKeyword) {
   // include 3 item and not include like item
-  if (post.includes(verifyDetails.facebook_id) && post.includes(verifyDetails.criteria) && post.includes(shareKeyword) && !post.includes(likeKeyword)) {
+  if (post.includes(verifyDetails.facebook_id) && post.includes(verifyDetails.criteria) && post.includes(shareKeyword) && !post.includes(likeKeyword) && !post.includes(commentKeyword)) {
     console.log('verify post success');
     completeVerify('success', verifyDetails);
     await page.close();
-  } else if (!post.includes(shareKeyword) || post.includes(likeKeyword)) {
+  } else if (!post.includes(shareKeyword) || post.includes(likeKeyword) || post.includes(commentKeyword)) {
     console.log('keyword not found: verify fail');
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
@@ -123,12 +122,12 @@ async function verifyPageFunction(page, post, verifyDetails, keyword, likeItem) 
   }
 }
 
-async function verifyPageShareFunction(page, post, verifyDetails, likeItem, shareKeyword, likeKeyword) {
-  if (dom.includes(verifyDetails.facebook_id) && likeItem.includes(decodeURI(verifyDetails.criteria) && dom.includes(shareKeyword) && !dom.includes(likeKeyword))) {
+async function verifyPageShareFunction(page, post, verifyDetails, likeItem, shareKeyword, likeKeyword, commentKeyword) {
+  if (post.includes(verifyDetails.facebook_id) && likeItem.includes(decodeURI(verifyDetails.criteria) && post.includes(shareKeyword) && !post.includes(likeKeyword) && !post.includes(commentKeyword))) {
     console.log(`verify ${verifyDetails.action_name} success`);
     completeVerify('success', verifyDetails);
     await page.close();
-  } else if (!post.includes(shareKeyword) || post.includes(likeKeyword)) {
+  } else if (!post.includes(shareKeyword) || post.includes(likeKeyword) || post.includes(commentKeyword)) {
     console.log('keyword not found: verify fail');
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
