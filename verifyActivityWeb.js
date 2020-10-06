@@ -28,10 +28,10 @@ async function verifyActivityWeb(browser, verifyDetails) {
   try {
     console.log('go to activity link: ', verifyDetails.action_link);
 
-    // await page.authenticate({
-    //   username: 'lum-customer-hl_8acf1767-zone-static',
-    //   password: 'gqq6sghvkmlb'
-    // });
+    await page.authenticate({
+      username: 'lum-customer-hl_8acf1767-zone-static',
+      password: 'gqq6sghvkmlb'
+    });
 
     await page.goto(verifyDetails.action_link, { waitUntil: 'load'});
 
