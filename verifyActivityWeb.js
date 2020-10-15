@@ -79,6 +79,8 @@ async function verifyPostFunction(page, post, verifyDetails, keyword) {
     completeVerify('success', verifyDetails);
     await page.close();
   } else if (!post.includes(keyword)) {
+    console.log(post);
+    console.log(keyword, post.includes(keyword));
     console.log('keyword not found: verify fail');
     completeVerify('fail', verifyDetails, FACEBOOK_ERROR_STATUS.LINK_INVALID);
   } else {
