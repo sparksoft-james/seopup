@@ -97,15 +97,24 @@ console.log('device_name:', device_name);
         console.log(verifyDetails.action_link);
 
         if(verifyDetails.action_link.includes('facebook')) {
+          if(verifyDetails.action_name !== 'page_like' && verifyDetails.action_name !== 'page_share'){
+            if (!verifyDetails.action_link.includes('m.facebook.com')) {
+              console.log('desktop version link');
+              await verifyActivityWeb(browser, verifyDetails);
+            } else {
+              console.log('mobile version link change to web version');
+              verifyDetails.action_link = verifyDetails.action_link.replace('m.facebook.com', 'www.facebook.com');
+              await verifyActivityWeb(browser, verifyDetails);
+              // await verifyActivityMobile(browser, verifyDetails);
+            }
+        } else {
           if (!verifyDetails.action_link.includes('m.facebook.com')) {
             console.log('desktop version link');
-            await verifyActivityWeb(browser, verifyDetails);
-          } else {
-            console.log('mobile version link change to web version');
-            verifyDetails.action_link = verifyDetails.action_link.replace('m.facebook.com', 'www.facebook.com');
-            await verifyActivityWeb(browser, verifyDetails);
-            // await verifyActivityMobile(browser, verifyDetails);
-          }
+            // change to mobile version
+            verifyDetails.action_link = verifyDetails.action_link.replace('www.facebook.com', 'm.facebook.com');
+          } 
+          await verifyActivityWeb(browser, verifyDetails);
+        }
           console.log('complete verify activity process');
           // completed = true;
         } else {
@@ -122,6 +131,6 @@ console.log('device_name:', device_name);
     } 
     loop++
   }
-  while (loop < 10);
+  while (true);
   process.exit();
 })();
