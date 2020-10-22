@@ -14,7 +14,7 @@ module.exports = {
   FACEBOOK_ERROR_STATUS,
   base_url: base_url,
   launch_options: {
-    headless: false,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--incognito', "--disable-gpu", ],
     // args: ['--no-sandbox', '--disable-setuid-sandbox', '--incognito', "--disable-gpu", `--proxy-server=zproxy.lum-superproxy.io:22225`],
     // executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome'
