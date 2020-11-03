@@ -52,7 +52,13 @@ console.log('device_name:', device_name);
   async function completeVerify(status, payload, $errorMessage = '') {
     return new Promise(function (resolve, reject) {
       const apiKey = status === 'success' ? 'deviceComplete' : 'reject'
-      const obj = { user_id: payload.user_id, sub_id: payload.sub_id, error_msg: $errorMessage };
+      const obj = { 
+        user_id: payload.user_id, 
+        sub_id: payload.sub_id,
+        queued_mission_id: payload.queued_mission_id, 
+        device_name: device_name, 
+        error_msg: $errorMessage 
+      };
       console.log(obj)
       axios.post(base_url + `/main-mission/${apiKey}`, obj)
         .then(function (response) {
@@ -129,7 +135,6 @@ console.log('device_name:', device_name);
         completed = true;
       }
     } 
-    loop++
   }
   while (true);
   process.exit();

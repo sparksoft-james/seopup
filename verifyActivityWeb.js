@@ -2,12 +2,20 @@ const axios = require('axios');
 
 const { initPage } = require('./libs/utils');
 const { base_url, FACEBOOK_ERROR_STATUS } = require('./config');
+const device_name = process.env.DEVICE_NAME;
 
 async function completeVerify(status, payload) {
   return new Promise(function (resolve, reject) {
 
     const apiKey = status === 'success' ? 'deviceComplete' : 'reject'
-    const obj = { user_id: payload.user_id, sub_id: payload.sub_id };
+    
+    const obj = { 
+      user_id: payload.user_id, 
+      sub_id: payload.sub_id, 
+      queued_mission_id: payload.queued_mission_id, 
+      device_name: device_name
+    };
+
     console.log('firing api payload', obj)
 
     axios.post(base_url + `/main-mission/${apiKey}`, obj)
