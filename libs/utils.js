@@ -13,7 +13,7 @@ function getRandomArbitrary(min, max) {
 
 async function initPage(browser, acceptCss, acceptImg) {
   const page = await browser.newPage();
-  page.setDefaultTimeout(60000);
+  page.setDefaultTimeout(240000);
   await page.setViewport({
     ...options.viewport_options,
   });
@@ -29,7 +29,6 @@ async function initPage(browser, acceptCss, acceptImg) {
         rejectCode: 1,
         message: 'Reject to verify follow'
       });
-      // page.close();
       // await rejectVerify(verifyDetails);
     }
     else {

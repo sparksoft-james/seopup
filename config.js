@@ -1,4 +1,14 @@
 const path = require('path');
+require('dotenv').config();
+
+const base_url = process.env.BASE_URL;
+
+const FACEBOOK_ERROR_STATUS = {
+  LINK_INVALID: "link_invalid",
+  FACEBOOK_ID_INVALID: "facebook_id_invalid",
+  TAG_KEYWORD_INVALID: "tag_or_keyword_invalid",
+  INTERNAL_ERROR: "internal_error",
+};
 
 const FACEBOOK_ERROR_STATUS = {
   LINK_INVALID: "link_invalid",
@@ -10,7 +20,9 @@ module.exports = {
   base_url: 'https://api.luca4u.com/hu-pan-backend/hupan/public/api',
   launch_options: {
     headless: true,
-    args: ['--disable-web-security', '--no-sandbox'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--incognito', "--disable-gpu", ],
+    // args: ['--no-sandbox', '--disable-setuid-sandbox', '--incognito', "--disable-gpu", `--proxy-server=zproxy.lum-superproxy.io:22225`],
+    // executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome'
   },
   viewport_options: {
     width: 1920,
