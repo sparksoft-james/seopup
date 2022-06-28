@@ -1,141 +1,157 @@
-const puppeteer = require('puppeteer-extra');
-require('dotenv').config();
+const puppeteer = require("puppeteer-extra");
+require("dotenv").config();
 
 // add stealth plugin and use defaults (all evasion techniques)
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(StealthPlugin());
 
-const options = require('./config.js') || {};
-const { initPage, delay } = require('./libs/utils');
-const axios = require('axios');
-const verifyActivityMobile = require('./verifyActivityMobile');
-const verifyActivityWeb = require('./verifyActivityWeb');
+const { delay } = require("./libs/utils");
+const axios = require("axios");
 
-const base_url = options.base_url;
-const facebook_error_status = options.FACEBOOK_ERROR_STATUS;
-
-const device_name = process.env.DEVICE_NAME;
-
-console.log('device_name:', device_name);
-
+// const base_url = options.base_url;
 
 (async () => {
   // call api for get data
-  // let verifyDetails = {
-  //   user_id: 13,
-  //   sub_id: 1,
-  //   action_name: 'post_share',
-  //   action_link: 'https://www.facebook.com/story.php?story_fbid=973462283128744&substory_index=2&id=100013949430763&ref=bookmarks',
-  //   criteria: '694353118091668',
-  //   facebook_id:'100013949430763',
-  // }
+  const searchQuery = [
+    "time coverage",
+    "time fibre coverage",
+    "apply time internet",
+  ];
+  // const searchQuery = "time fibre coverage";
+  console.log(
+    "random searchQuery",
+    searchQuery[Math.floor(Math.random() * searchQuery.length)]
+  );
 
-  let verifyDetails = {}
-
-  async function getVerifyData() {
-    return new Promise((resolve, reject) => {
-      const payload = { device_name };
-      axios.post(base_url + '/lua/facebook_calling', payload)
-        .then((response) => {
-          verifyDetails = response.data;
-          console.log(verifyDetails);
-          resolve();
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-          reject();
-        })
-    })
-  }
-  // fire api for fail
-  async function completeVerify(status, payload, $errorMessage = '') {
-    return new Promise(function (resolve, reject) {
-      const apiKey = status === 'success' ? 'deviceComplete' : 'reject'
-      const obj = { 
-        user_id: payload.user_id, 
-        sub_id: payload.sub_id,
-        queued_mission_id: payload.queued_mission_id, 
-        device_name: device_name, 
-        error_msg: $errorMessage 
-      };
-      console.log(obj)
-      axios.post(base_url + `/main-mission/${apiKey}`, obj)
-        .then(function (response) {
-          console.log('response.data');
-          console.log(response.data);
-          resolve();
-        })
-        .catch(function (error) {
-          // handle error
-          console.log('error');
-          console.log(error);
-          reject();
-        })
-    })
-  }
-
-  const browser = await puppeteer.launch({
-    ...options.launch_options
-  });
-
-  console.log('initializing...');
   // calling the api from backend
   let loop = 0;
   let completed = true;
+  const targetLink = "https://timeinternet.my";
 
   do {
-    if (completed) {
-      if (verifyDetails === 'no task') {
-        await delay(60000);
-        await getVerifyData();
-      } else {
-        await delay(3000);
-        await getVerifyData();
-      }
+    // const options = require("./config.js") || {};
+    const vpnpool = [
+      // "https://my46.nordvpn.com:89",
+      "https://my47.nordvpn.com:89",
+      // "https://my37.nordvpn.com:89",
+      // "https://my48.nordvpn.com:89",
+      "https://my41.nordvpn.com:89",
+      "https://my45.nordvpn.com:89",
+      "https://my38.nordvpn.com:89",
+      // "https://my39.nordvpn.com:89",
+    ];
+
+    const chosenVpn = vpnpool[Math.floor(Math.random() * vpnpool.length)];
+
+    console.log("chosen vpn:", chosenVpn);
+    const browser = await puppeteer.launch({
+      headless: false,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--incognito",
+        "--disable-gpu",
+        `-proxy-server=${chosenVpn}`,
+      ],
+      // args: ['--no-sandbox', '--disable-setuid-sandbox', '--incognito', "--disable-gpu", `--proxy-server=zproxy.lum-superproxy.io:22225`],
+      executablePath: "C:/Program Files (x86)/Google/Chrome/Application/chrome",
+    });
+
+    const [page] = await browser.pages();
+
+    await page.authenticate({
+      username: "matt.muir@me.com",
+      password: "6617Kennedy!",
+    });
+
+    try {
+      await page.goto("https://www.google.com/", {
+        waitUntil: "domcontentloaded",
+      });
+    } catch (e) {
+      console.log("keep process");
+      continue; 
     }
 
-    await delay(2000);
-    if (verifyDetails !== 'no task') {
-      try {
-        
-        console.log('starting verify activity process');
-        console.log(verifyDetails.action_link);
+    try {
+      await page.waitForSelector("#L2AGLb", { timeout: 5000 });
+      page.$eval("#L2AGLb", (btn) => btn.click());
+    } catch (e) {
+      console.log("keep process");
+    }
+    await page.waitForSelector('input[aria-label="Search"]', {
+      visible: true,
+    });
 
-        if(verifyDetails.action_link.includes('facebook')) {
-          if(verifyDetails.action_name !== 'page_like' && verifyDetails.action_name !== 'page_share'){
-            if (!verifyDetails.action_link.includes('m.facebook.com')) {
-              console.log('desktop version link');
-              await verifyActivityWeb(browser, verifyDetails);
-            } else {
-              console.log('mobile version link change to web version');
-              verifyDetails.action_link = verifyDetails.action_link.replace('m.facebook.com', 'www.facebook.com');
-              await verifyActivityWeb(browser, verifyDetails);
-              // await verifyActivityMobile(browser, verifyDetails);
+    await page.type(
+      'input[aria-label="Search"]',
+      searchQuery[Math.floor(Math.random() * searchQuery.length)]
+    );
+    // await page.type('input[aria-label="Search"]', searchQuery);
+    await Promise.all([page.waitForNavigation(), page.keyboard.press("Enter")]);
+    await delay(3000);
+    // await page.solveRecaptchas();
+
+    try {
+      let bodyHTML = await page.evaluate(
+        () => document.documentElement.outerHTML
+      );
+      // const link = await page.evaluate(body => body.innerHTML.includes(targetLink));
+
+      console.log("evaluate link");
+
+      if (bodyHTML.includes("https://timeinternet.my")) {
+        await page.$$eval(
+          ".LC20lb",
+          (els) =>
+            els
+              .find((e) =>
+                e.parentNode.href.includes("https://timeinternet.my")
+              )
+              .click()
+          // { timeout: 5000 }
+        );
+      } else {
+        for (i = 0; i < 4; i++) {
+          page.$eval(
+            "#pnnext",
+            (btn) => {
+              btn.click();
             }
-        } else {
-          if (!verifyDetails.action_link.includes('m.facebook.com')) {
-            console.log('desktop version link');
-            // change to mobile version
-            verifyDetails.action_link = verifyDetails.action_link.replace('www.facebook.com', 'm.facebook.com');
-          } 
-          await verifyActivityWeb(browser, verifyDetails);
-        }
-          console.log('complete verify activity process');
-          // completed = true;
-        } else {
-          console.log('fail verify activity process ERROR');
+            // { timeout: 5000 }
+          );
+          console.log("clicked next page");
+          await delay(2000);
+          let bodyHTMLNextPage = await page.evaluate(
+            () => document.documentElement.outerHTML
+          );
+          await delay(2000);
+          console.log("evaluate finsih");
+          if (bodyHTMLNextPage.includes("https://timeinternet.my")) {
+            console.log("find target link");
+            await page.$$eval(
+              ".LC20lb",
+              (els) =>
+                els
+                  .find((e) =>
+                    e.parentNode.href.includes("https://timeinternet.my")
+                  )
+                  .click(),
+              { timeout: 5000 }
+            );
 
-          await completeVerify('fail', verifyDetails, facebook_error_status.LINK_INVALID);
-        
-        } 
-      } catch (e) {
-        console.log('ERROR', e);
-        await completeVerify('fail', verifyDetails, facebook_error_status.INTERNAL_ERROR);
-        completed = true;
+            await delay(2000);
+
+            break;
+          }
+        }
       }
-    } 
-  }
-  while (true);
-  process.exit();
+    } catch (e) {
+      console.log("exception", e);
+    }
+
+    await delay(5000);
+    browser.close();
+    // process.exit();
+  } while (true);
 })();
