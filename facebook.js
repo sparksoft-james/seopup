@@ -51,17 +51,35 @@ const axios = require("axios");
         "--disable-setuid-sandbox",
         "--incognito",
         "--disable-gpu",
-        `-proxy-server=${chosenVpn}`,
+        // `-proxy-server=${chosenVpn}`,
       ],
-      // args: ['--no-sandbox', '--disable-setuid-sandbox', '--incognito', "--disable-gpu", `--proxy-server=zproxy.lum-superproxy.io:22225`],
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--incognito', "--disable-gpu", `--proxy-server=zproxy.lum-superproxy.io:22225`],
       executablePath: "C:/Program Files (x86)/Google/Chrome/Application/chrome",
     });
 
     const [page] = await browser.pages();
 
+    const clickPage = async (page, id) => {
+      console.log("id:", id);
+      console.log("delay 10 sec");
+      await delay(getRandomArbitrary(12000, 20000));
+
+      const els = await page.$$(id);
+
+      for (let i = 0; i < els.length; i++) {
+        await els[i].$eval("a", (a) => a.click());
+        // console.log(link);
+      }
+      console.log("button click");
+    };
+
+    const getRandomArbitrary = (min, max) => {
+      return Math.random() * (max - min) + min;
+    };
+
     await page.authenticate({
-      username: "matt.muir@me.com",
-      password: "6617Kennedy!",
+      username: "pjhlelievre@gmail.com",
+      password: "Dindon92$",
     });
 
     try {
@@ -70,7 +88,7 @@ const axios = require("axios");
       });
     } catch (e) {
       console.log("keep process");
-      continue; 
+      continue;
     }
 
     try {
@@ -90,7 +108,6 @@ const axios = require("axios");
     // await page.type('input[aria-label="Search"]', searchQuery);
     await Promise.all([page.waitForNavigation(), page.keyboard.press("Enter")]);
     await delay(3000);
-    // await page.solveRecaptchas();
 
     try {
       let bodyHTML = await page.evaluate(
@@ -103,14 +120,17 @@ const axios = require("axios");
       if (bodyHTML.includes("https://timeinternet.my")) {
         await page.$$eval(
           ".LC20lb",
-          (els) =>
+          (els) => {
             els
               .find((e) =>
                 e.parentNode.href.includes("https://timeinternet.my")
               )
-              .click()
+              .click();
+          }
           // { timeout: 5000 }
         );
+        await clickPage(page, "#menu-item-853");
+        await clickPage(page, "#menu-item-1108");
       } else {
         for (i = 0; i < 4; i++) {
           page.$eval(
@@ -131,17 +151,18 @@ const axios = require("axios");
             console.log("find target link");
             await page.$$eval(
               ".LC20lb",
-              (els) =>
+              async (els, page) => {
                 els
                   .find((e) =>
                     e.parentNode.href.includes("https://timeinternet.my")
                   )
-                  .click(),
+                  .click();
+              },
               { timeout: 5000 }
             );
 
-            await delay(2000);
-
+            await clickPage(page, "#menu-item-853");
+            await clickPage(page, "#menu-item-1108");
             break;
           }
         }
